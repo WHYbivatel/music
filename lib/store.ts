@@ -23,7 +23,7 @@ export function update(fn:(s:DemoState)=>DemoState) {
  if(typeof window!=='undefined'){try{localStorage.setItem(KEY,JSON.stringify(next));}catch{throw new Error('Не удалось сохранить данные. Освободите место в браузере.');}}state=next;
  listeners.forEach(l=>l());
 }
-export function resetDemo(){update(s=>({...initialState(),audit:[event('demo.reset','Демонстрационные данные сброшены',actorOf(s))]}));}
+export function resetDemo(){update(s=>({...initialState(),audit:[event('demo.reset','Данные студии сброшены',actorOf(s))]}));}
 export function useDemo(){return useSyncExternalStore(l=>{listeners.add(l);return()=>{listeners.delete(l);};},getState,()=>undefined);}
 
 let pending=Promise.resolve();

@@ -9,7 +9,7 @@ export function createJob(state: DemoState, settings: Settings, key: string, fai
  if (!settings.prompt.trim()) throw new Error('Опишите музыку, которую хотите создать');
  if (settings.prompt.length > 1500 || ![30,60,120,180].includes(settings.duration)) throw new Error('Проверьте описание и длительность');
  const price = cost(settings.duration);
- if (state.balance < price) throw new Error('Недостаточно демотокенов. Пополните баланс');
+ if (state.balance < price) throw new Error('Недостаточно токенов. Пополните баланс');
  const id = `gen-${key}`;
  return {...state, balance: state.balance-price, jobs:[{id,key,settings:{...settings},status:'queued',created:now,cost:price,fail},...state.jobs], operations:[{id,kind:'reserve',amount:-price,label:'Резерв на создание трека',created:now},...state.operations]};
 }
@@ -25,7 +25,7 @@ export function settleJobs(state: DemoState, now = Date.now()): DemoState {
   }
   const success = !job.fail;
   const track: Track = {id:job.id,title:job.settings.title.trim() || 'Новая волна',created:now,settings:job.settings,cover:(state.tracks.length%4)+1,favorite:false,audioUrl:`/audio/demo-${job.settings.duration}.wav`,demo:true};
-  next={...next,balance:next.balance+(success?0:job.cost),jobs:next.jobs.map(j=>j.id===job.id?{...j,status:success?'ready':'error',trackId:success?track.id:undefined}:j),tracks:success?[track,...next.tracks]:next.tracks,operations:[...(!success?[{id:`refund-${job.id}`,kind:'refund' as const,amount:job.cost,label:'Возврат: ошибка демогенерации',created:now}]:[]),...next.operations.map(op=>op.id===job.id?{...op,kind:success?'generation' as const:'reserve' as const,label:success?'Создание трека':'Резерв освобождён'}:op)]};
+  next={...next,balance:next.balance+(success?0:job.cost),jobs:next.jobs.map(j=>j.id===job.id?{...j,status:success?'ready':'error',trackId:success?track.id:undefined}:j),tracks:success?[track,...next.tracks]:next.tracks,operations:[...(!success?[{id:`refund-${job.id}`,kind:'refund' as const,amount:job.cost,label:'Возврат: ошибка генерации',created:now}]:[]),...next.operations.map(op=>op.id===job.id?{...op,kind:success?'generation' as const:'reserve' as const,label:success?'Создание трека':'Резерв освобождён'}:op)]};
  }
  return next;
 }
@@ -39,5 +39,5 @@ export function changePayment(state: DemoState,id:string,action:'paid'|'confirm'
  if(action==='paid' && p.status!=='awaiting_payment')return state;
  if(action!=='paid' && p.status!=='pending_review')return state;
  const status=action==='paid'?'pending_review':action==='confirm'?'confirmed':'rejected';
- return {...state,payments:state.payments.map(p=>p.id===id?{...p,status}:p),balance:state.balance+(action==='confirm'?p.tokens:0),operations:action==='confirm'?[{id:`payment-${id}`,kind:'topup',amount:p.tokens,label:'Пополнение демобаланса',created:Date.now()},...state.operations]:state.operations};
+ return {...state,payments:state.payments.map(p=>p.id===id?{...p,status}:p),balance:state.balance+(action==='confirm'?p.tokens:0),operations:action==='confirm'?[{id:`payment-${id}`,kind:'topup',amount:p.tokens,label:'Пополнение баланса',created:Date.now()},...state.operations]:state.operations};
 }
