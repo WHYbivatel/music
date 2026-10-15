@@ -1,0 +1,20 @@
+import {readFileSync} from 'node:fs';
+import {runInNewContext} from 'node:vm';
+import assert from 'node:assert/strict';
+const base=process.argv[2]||'http://127.0.0.1:3101';
+const response=await fetch(base+'/manifest.webmanifest');assert.equal(response.status,200);const manifest=await response.json();assert.equal(manifest.display,'standalone');
+for(const icon of manifest.icons)assert.equal((await fetch(base+icon.src)).status,200);
+const stores=new Map(),handlers={};let offline=false;
+const resolve=url=>new URL(typeof url==='string'?url:url.url,base).href;
+const network=async(input,options)=>{if(offline)throw new Error('Simulated offline');const r=await fetch(resolve(input),options);assert.ok(r.ok,`${input}: ${r.status}`);return r;};
+const open=async name=>{if(!stores.has(name))stores.set(name,new Map());const data=stores.get(name);return {async addAll(urls){await Promise.all(urls.map(async url=>data.set(resolve(url),await network(url))));},async put(req,res){data.set(resolve(req),res);},async match(req){return data.get(resolve(req))?.clone();},async keys(){return [...data.keys()].map(url=>({url}));},async delete(req){return data.delete(resolve(req));}};};
+const scope={self:{location:{origin:base},clients:{claim:async()=>{}},addEventListener:(name,handler)=>handlers[name]=handler,skipWaiting:()=>{}},caches:{open,keys:async()=>[...stores.keys()],delete:async name=>stores.delete(name),async match(req){for(const data of stores.values()){const match=data.get(resolve(req));if(match)return match.clone();}}},URL,Response,fetch:network};
+runInNewContext(readFileSync('public/sw.js','utf8'),scope);
+let install;handlers.install({waitUntil:promise=>install=promise});await install;
+const assets=[...stores.get('neon-sound-v2-static').keys()];assert.ok(assets.some(url=>url.includes('/_next/static/')),'Production chunks precached');
+offline=true;
+async function navigate(path){let result;handlers.fetch({request:{url:base+path,method:'GET',mode:'navigate',headers:new Headers()},respondWith:p=>result=p});return result;}
+const shell=await navigate('/');assert.ok((await shell.text()).includes('NEON SOUND'));
+let offlineScript;handlers.fetch({request:{url:base+'/offline.js',method:'GET',mode:'cors',headers:new Headers()},respondWith:p=>offlineScript=p});assert.ok((await (await offlineScript).text()).includes('reload'));
+const admin=await navigate('/admin');assert.ok((await admin.text()).includes('Соединение потеряно'));
+console.log(JSON.stringify({manifest:'standalone',icons:manifest.icons.length,precachedAssets:assets.length,offlineStudio:'passed',offlineAdminFallback:'passed',note:'Production HTTP + worker VM verification; native device installation not tested'},null,2));

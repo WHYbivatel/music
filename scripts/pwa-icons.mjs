@@ -1,0 +1,7 @@
+import fs from 'node:fs';
+import {deflateSync} from 'node:zlib';
+const crc=b=>{let c=0xffffffff;for(const v of b){c^=v;for(let i=0;i<8;i++)c=(c>>>1)^((c&1)?0xedb88320:0);}return (c^0xffffffff)>>>0;};
+const chunk=(name,data)=>{const type=Buffer.from(name),length=Buffer.alloc(4),sum=Buffer.alloc(4);length.writeUInt32BE(data.length);sum.writeUInt32BE(crc(Buffer.concat([type,data])));return Buffer.concat([length,type,data,sum]);};
+function create(size,path){const raw=Buffer.alloc((size*4+1)*size);for(let y=0;y<size;y++){const row=y*(size*4+1);for(let x=0;x<size;x++){const u=x/size,v=y/size,p=row+1+x*4;let rgb=[14,14,23];const distance=Math.hypot(u-.5,v-.5);const glow=Math.max(0,1-distance*2)*.2;rgb=rgb.map((c,i)=>Math.round(c+glow*[80,25,80][i]));const heights=[.16,.30,.46,.64,.38,.24,.12];let ink=false;for(let i=0;i<7;i++){const cx=.26+i*.08,half=heights[i]/2,dx=Math.abs(u-cx),dy=Math.max(0,Math.abs(v-.5)-half+.017);if(dx*dx+dy*dy<.017*.017)ink=true;}if(ink)rgb=[243,75,165];raw[p]=rgb[0];raw[p+1]=rgb[1];raw[p+2]=rgb[2];raw[p+3]=255;}}
+const ihdr=Buffer.alloc(13);ihdr.writeUInt32BE(size);ihdr.writeUInt32BE(size,4);ihdr[8]=8;ihdr[9]=6;fs.writeFileSync(path,Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]),chunk('IHDR',ihdr),chunk('IDAT',deflateSync(raw)),chunk('IEND',Buffer.alloc(0))]));}
+create(192,'public/icons/icon-192.png');create(512,'public/icons/icon-512.png');create(512,'public/icons/maskable-512.png');create(180,'public/icons/apple-touch-icon.png');

@@ -1,0 +1,3 @@
+import type { MetadataRoute } from 'next';
+import { PRODUCT } from '@/lib/config';
+export default function manifest():MetadataRoute.Manifest{return {id:'/',name:PRODUCT.name,short_name:PRODUCT.name,description:'Музыкальная студия: от первой идеи до нового звучания.',lang:'ru',start_url:'/',scope:'/',display:'standalone',background_color:'#09090F',theme_color:'#09090F',orientation:'any',categories:['music','entertainment','productivity'],icons:[{src:'/icons/icon-192.png',sizes:'192x192',type:'image/png',purpose:'any'},{src:'/icons/icon-512.png',sizes:'512x512',type:'image/png',purpose:'any'},{src:'/icons/maskable-512.png',sizes:'512x512',type:'image/png',purpose:'maskable'}],shortcuts:[{name:'Создать музыку',url:'/'},{name:'Моя библиотека',url:'/library'}]};}
