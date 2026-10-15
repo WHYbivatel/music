@@ -60,3 +60,17 @@ html[data-motion=off] .reveal-pending,.reveal-fallback,.reveal-fallback .reveal-
 .nav-item span,.package-name,.button,.chip{white-space:normal}
 @media(max-width:900px){.topbar .locale-switch{display:none}}
 @media(min-width:901px){.sidebar .locale-switch{display:none}}
+.prompt-tags{display:flex;flex-direction:column;gap:12px;margin-top:14px}
+.tag-block{display:flex;flex-direction:column;gap:8px;min-width:0}
+.tag-heading{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.tag-heading h3{font-size:13px;font-weight:600;letter-spacing:0}
+.tag-heading span,.tag-chip small{color:var(--text-secondary);font-size:12px}
+.tag-row{display:flex;flex-wrap:wrap;gap:8px}
+.tag-add,.tag-chip{display:inline-flex;align-items:center;gap:6px;max-width:100%;min-height:36px;padding:6px 12px;border:1px solid color-mix(in srgb,var(--accent) 35%,var(--border));border-radius:999px;background:color-mix(in srgb,var(--accent) 8%,transparent);color:var(--text);font-size:13px;line-height:1.25;text-align:left}
+.tag-chip{padding-right:6px}
+.tag-chip.is-conflict{border-color:color-mix(in srgb,var(--accent) 75%,white);background:color-mix(in srgb,var(--accent) 16%,transparent)}
+.tag-remove,.tag-clear{border:0;background:transparent;color:var(--text-secondary)}
+.tag-remove{display:grid;place-items:center;width:32px;height:32px;margin-right:-4px;border-radius:999px}
+.tag-clear{min-height:32px;padding:0;font-size:12px;text-decoration:underline;text-underline-offset:3px}
+@media(pointer:coarse){.tag-add,.tag-chip{min-height:40px}.tag-remove{width:36px;height:36px}}
+@media(prefers-reduced-motion:reduce){.tag-add,.tag-chip{transition:none}}

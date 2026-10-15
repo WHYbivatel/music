@@ -1,4 +1,5 @@
 import { cost, PRICING, EXAMPLES } from './config';
+import { normalizeTags, prepareRequest } from './tags';
 import { defaults, type DemoState, type Settings, type Track } from './types';
 export function initialState(): DemoState {
  return { version: 1, balance: PRICING.initialBalance, tracks: ['Midnight in Tokyo', 'Тихие орбиты', 'Beyond the horizon'].map((title,i) => ({ id: `seed-${i}`, title, created: Date.now() - (i+1)*86400000, settings: {...defaults, prompt: EXAMPLES[i].prompt, genre: EXAMPLES[i].genre}, cover: i+1, favorite: i === 1, audioUrl: '/audio/demo-120.wav', demo: true })), jobs: [], payments: [], operations: [], draft: {...defaults}, user: {name:'Алекс', email:'alex@demo.neonsound.local'} };
@@ -8,10 +9,11 @@ export function createJob(state: DemoState, settings: Settings, key: string, fai
  if (state.jobs.some(j => ['queued','generating'].includes(j.status))) throw new Error('Дождитесь завершения текущего трека');
  if (!settings.prompt.trim()) throw new Error('Опишите музыку, которую хотите создать');
  if (settings.prompt.length > 1500 || ![30,60,120,180].includes(settings.duration)) throw new Error('Проверьте описание и длительность');
+ prepareRequest(settings);
  const price = cost(settings.duration);
  if (state.balance < price) throw new Error('Недостаточно токенов. Пополните баланс');
  const id = `gen-${key}`;
- return {...state, balance: state.balance-price, jobs:[{id,key,settings:{...settings},status:'queued',created:now,cost:price,fail},...state.jobs], operations:[{id,kind:'reserve',amount:-price,label:'Резерв на создание трека',created:now},...state.operations]};
+ return {...state, balance: state.balance-price, jobs:[{id,key,settings:{...settings,tags:normalizeTags(settings.tags)},status:'queued',created:now,cost:price,fail},...state.jobs], operations:[{id,kind:'reserve',amount:-price,label:'Резерв на создание трека',created:now},...state.operations]};
 }
 export function settleJobs(state: DemoState, now = Date.now()): DemoState {
  let next = state;

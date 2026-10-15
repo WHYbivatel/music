@@ -1,3 +1,4 @@
+import { normalizeTags } from './tags';
 import type { DemoState, Settings } from './types';
 
 export const GENRE_IDS = ['auto', 'pop', 'electronic', 'hiphop', 'rock', 'jazz', 'ambient', 'orchestral', 'lofi'] as const;
@@ -18,7 +19,7 @@ const lyrics: Record<string, string> = { 'Автоматически': 'auto', '
 const instruments: Record<string, string> = { 'Пианино': 'piano', 'Гитара': 'guitar', 'Синтезатор': 'synth', 'Бас': 'bass', 'Ударные': 'drums', 'Струнные': 'strings' };
 
 export function migrateSettings(settings: Settings): Settings {
-  return { ...settings, genre: legacy(genres, settings.genre), purpose: legacy(purposes, settings.purpose), mood: legacy(moods, settings.mood), tempo: legacy(tempos, settings.tempo), language: legacy(vocals, settings.language), lyricsMode: legacy(lyrics, settings.lyricsMode), instruments: settings.instruments.map(item => legacy(instruments, item)) };
+  return { ...settings, tags: normalizeTags(settings.tags), genre: legacy(genres, settings.genre), purpose: legacy(purposes, settings.purpose), mood: legacy(moods, settings.mood), tempo: legacy(tempos, settings.tempo), language: legacy(vocals, settings.language), lyricsMode: legacy(lyrics, settings.lyricsMode), instruments: (settings.instruments ?? []).map(item => legacy(instruments, item)) };
 }
 export function migrateState(state: DemoState): DemoState {
   return { ...state, draft: migrateSettings(state.draft), tracks: state.tracks.map(track => ({ ...track, settings: migrateSettings(track.settings) })), jobs: state.jobs.map(job => ({ ...job, settings: migrateSettings(job.settings) })) };
