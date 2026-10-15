@@ -2,6 +2,7 @@
 import { event, withAudit, actorOf, auditTransition, type Actor } from './audit';
 import { useSyncExternalStore } from 'react';
 import { initialState, settleJobs } from './engine';
+import { migrateState } from './options';
 import type { DemoState } from './types';
 const IS_API=process.env.NEXT_PUBLIC_DATA_MODE==='api';
 const KEY=IS_API?'neon-sound-api-cache-v1':'neon-sound-demo-v1';
@@ -12,13 +13,13 @@ const listeners=new Set<()=>void>();
 export function getState():DemoState {if(!state)state=fresh();return state;}
 export function initStore() {
  if(hydrated)return;hydrated=true;
- try {const raw=localStorage.getItem(KEY);if(raw){const value=JSON.parse(raw);if(value.version===1 && Array.isArray(value.tracks) && typeof value.balance==='number')state=value;}}catch{}
+ try {const raw=localStorage.getItem(KEY);if(raw){const value=JSON.parse(raw);if(value.version===1 && Array.isArray(value.tracks) && typeof value.balance==='number')state=migrateState(value);}}catch{}
  if(!IS_API)update(s=>settleJobs(s)); listeners.forEach(l=>l());
- window.addEventListener('storage',event=>{if(event.key===KEY && event.newValue){try{state=JSON.parse(event.newValue);listeners.forEach(l=>l());}catch{}}});
+ window.addEventListener('storage',event=>{if(event.key===KEY && event.newValue){try{state=migrateState(JSON.parse(event.newValue));listeners.forEach(l=>l());}catch{}}});
 }
 export function update(fn:(s:DemoState)=>DemoState) {
  // Read the latest snapshot before every synchronous local transaction, including other tabs.
- if(typeof window!=='undefined' && hydrated){try{const raw=localStorage.getItem(KEY);if(raw){const latest=JSON.parse(raw);if(latest.version===1)state=latest;}}catch{}}
+ if(typeof window!=='undefined' && hydrated){try{const raw=localStorage.getItem(KEY);if(raw){const latest=JSON.parse(raw);if(latest.version===1)state=migrateState(latest);}}catch{}}
  const current=getState(),candidate=fn(current);if(candidate===current)return;const next=IS_API?candidate:auditTransition(current,candidate);
  if(typeof window!=='undefined'){try{localStorage.setItem(KEY,JSON.stringify(next));}catch{throw new Error('Не удалось сохранить данные. Освободите место в браузере.');}}state=next;
  listeners.forEach(l=>l());

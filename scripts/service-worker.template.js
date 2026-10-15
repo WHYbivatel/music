@@ -29,8 +29,9 @@ self.addEventListener('fetch',event=>{
  const request=event.request,url=new URL(request.url);
  if(request.method!=='GET'||url.origin!==self.location.origin||url.pathname.startsWith('/v1/')||url.pathname.startsWith('/api/')||url.pathname==='/sw.js'||request.headers.has('RSC')||url.searchParams.has('_rsc'))return;
  if(request.mode==='navigate'){
-  // Do not persist profile, payment or login HTML; public studio shell contains no account data.
-  const allowed=['/','/library','/ui-kit'].includes(url.pathname);
+  // Locale prefixes share the public shell. Account, payment and admin HTML stay uncached.
+  const bare=url.pathname.replace(/^\/(kk|ru|en)(?=\/|$)/,'')||'/';
+  const allowed=['/','/library','/ui-kit'].includes(bare);
   event.respondWith((async()=>{try{const response=await fetch(request,{cache:'no-store'});if(response.ok&&allowed){const cache=await caches.open(PAGES);await cache.put(url.pathname,response.clone());}return response;}catch{return (allowed?await (await caches.open(PAGES)).match(url.pathname):null)||await (await caches.open(STATIC)).match('/offline.html')||Response.error();}})());return;
  }
  const safe=SHELL.includes(url.pathname)||url.pathname.startsWith('/_next/static/')||url.pathname.startsWith('/covers/')||url.pathname.startsWith('/icons/');

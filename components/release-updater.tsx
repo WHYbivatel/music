@@ -1,4 +1,5 @@
 'use client';
+import { t } from '@/lib/i18n';
 import { useEffect, useState } from 'react';
 import { RefreshCw } from 'lucide-react';
 import { getState } from '@/lib/store';
@@ -52,7 +53,7 @@ export default function ReleaseUpdater(){
   return()=>{disposed=true;manager.dispose();clearInterval(poll);clearInterval(tick);removers.forEach(remove=>remove());};
  },[]);
  if(!state.target)return null;
- const label=state.stage==='deferred'?'Новая версия готова. Обновим после завершения текущего действия.':state.stage==='installing'?'Загружаем новую версию приложения…':state.stage==='reloading'?'Обновляем приложение…':state.stage==='retry'?'Проверяем, что новая версия доступна. Повторим автоматически.':'Новая версия готова. Страница обновится автоматически.';
- return <div className="pwa-update" role="status"><RefreshCw size={17}/><span>{label}<small className="release-target">v{state.target.version} · {state.target.id.slice(0,8)}</small></span><Button disabled={state.stage==='reloading'||state.stage==='installing'} onClick={()=>apply?.()}>Обновить сейчас</Button></div>;
+ const label=state.stage==='deferred'?t("Новая версия готова. Обновим после завершения текущего действия."):state.stage==='installing'?t("Загружаем новую версию приложения…"):state.stage==='reloading'?t("Обновляем приложение…"):state.stage==='retry'?t("Проверяем, что новая версия доступна. Повторим автоматически."):t("Новая версия готова. Страница обновится автоматически.");
+ return <div className="pwa-update" role="status"><RefreshCw size={17}/><span>{label}<small className="release-target">v{state.target.version} · {state.target.id.slice(0,8)}</small></span><Button disabled={state.stage==='reloading'||state.stage==='installing'} onClick={()=>apply?.()}>{t("Обновить сейчас")}</Button></div>;
 }
-export function BuildVersion(){return <span className="build-version" title={`Сборка: ${BUILD.id}\nДата: ${BUILD.builtAt||'режим разработки'}\nCommit: ${BUILD.revision}`}>v{BUILD.version}<span> · {BUILD.id==='development'?'DEV':BUILD.id.slice(-8)}</span></span>;}
+export function BuildVersion(){return <span className="build-version" title={`${t('build.label',{id:BUILD.id})}\n${t('build.date',{date:BUILD.builtAt||t("режим разработки")})}\nCommit: ${BUILD.revision}`}>v{BUILD.version}<span> · {BUILD.id==='development'?'DEV':BUILD.id.slice(-8)}</span></span>;}

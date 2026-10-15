@@ -1,6 +1,6 @@
 import type { AuditEvent } from './audit';
 export type Settings = { prompt: string; vocal: boolean; duration: number; genre: string; purpose: string; mood: string; tempo: string; instruments: string[]; language: string; lyricsMode: string; lyrics: string; title: string };
-export const defaults: Settings = { prompt: '', vocal: false, duration: 120, genre: 'Автоматически', purpose: 'Музыка для видео', mood: 'Спокойное', tempo: 'Автоматически', instruments: [], language: 'Русский', lyricsMode: 'Автоматически', lyrics: '', title: '' };
+export const defaults: Settings = { prompt: '', vocal: false, duration: 120, genre: 'auto', purpose: 'video', mood: 'calm', tempo: 'auto', instruments: [], language: 'ru', lyricsMode: 'auto', lyrics: '', title: '' };
 export type Track = { id: string; title: string; created: number; settings: Settings; cover: number; favorite: boolean; audioUrl: string; demo: true };
 export type Job = { id: string; key: string; settings: Settings; status: 'queued' | 'generating' | 'ready' | 'error'; created: number; cost: number; fail: boolean; trackId?: string };
 export type Payment = { id: string; packageId: string; status: 'awaiting_payment' | 'pending_review' | 'confirmed' | 'rejected'; created: number; price: number; tokens: number };
