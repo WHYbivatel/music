@@ -25,6 +25,7 @@ export function update(fn:(s:DemoState)=>DemoState) {
  listeners.forEach(l=>l());
 }
 export function resetDemo(){update(s=>({...initialState(),audit:[event('demo.reset','Данные студии сброшены',actorOf(s))]}));}
+export function forgetAccount(){const next=fresh();state=next;try{localStorage.removeItem(KEY);}catch{}listeners.forEach(l=>l());}
 export function useDemo(){return useSyncExternalStore(l=>{listeners.add(l);return()=>{listeners.delete(l);};},getState,()=>undefined);}
 
 let pending=Promise.resolve();

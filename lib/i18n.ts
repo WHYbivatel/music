@@ -97,6 +97,10 @@ const ERRORS: Record<string, string> = {
   'Аудиофайл недоступен': 'Аудиофайл недоступен',
 };
 export function userError(locale: Locale, error: unknown) {
+  if (error && typeof error === 'object' && 'code' in error && typeof (error as { code?: unknown }).code === 'string') {
+    const api = error as { code: string; params?: Record<string, string | number> };
+    return translate(locale, api.code, api.params);
+  }
   const message = error instanceof Error ? error.message : String(error);
   const status = message.match(/^Ошибка API \((\d+)\)/);
   if (status) return translate(locale, 'error.apiStatus', { status: status[1] });
@@ -112,6 +116,7 @@ const OPERATIONS: Record<string, string> = {
   'Пополнение баланса': 'op.topup',
 };
 export function operationText(locale: Locale, label: string, kind: string) {
+  if (label.startsWith('op.') || label.startsWith('error.')) return translate(locale, label);
   return translate(locale, OPERATIONS[label] || (kind === 'reserve' ? 'op.reserve' : kind === 'refund' ? 'op.refund' : kind === 'topup' ? 'op.topup' : 'op.charge'));
 }
 

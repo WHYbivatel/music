@@ -3,7 +3,7 @@ import { LOCALE_COOKIE, isLocale } from '@/lib/i18n';
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  if (pathname.startsWith('/api') || pathname.startsWith('/_next') || pathname.includes('.')) return NextResponse.next();
+  if (pathname.startsWith('/api') || pathname.startsWith('/v1') || pathname.startsWith('/_next') || pathname.includes('.')) return NextResponse.next();
   const fromPath = pathname.match(/^\/(kk|ru|en)(?=\/|$)/)?.[1];
   const saved = request.cookies.get(LOCALE_COOKIE)?.value;
   const locale = isLocale(fromPath) ? fromPath : isLocale(saved) ? saved : 'ru';

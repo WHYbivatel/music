@@ -1,5 +1,8 @@
 node_modules/
 .next/
+server/.venv/
+server/.pytest_cache/
+**/__pycache__/
 out/
 .env*
 !.env.example
