@@ -438,7 +438,7 @@ const ClickSpark = forwardRef<ClickSparkHandle, ClickSparkProps>(
         if (!recent) spawn(event.clientX, event.clientY);
       };
 
-      // NEON SOUND: trigger imperatively only after an accepted action.
+      // ÄUEN: trigger imperatively only after an accepted action.
       // Automatic click effects disabled to avoid success effects on validation errors.
 
       engineRef.current = {

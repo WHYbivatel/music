@@ -22,5 +22,6 @@ export function migrateSettings(settings: Settings): Settings {
   return { ...settings, tags: normalizeTags(settings.tags), genre: legacy(genres, settings.genre), purpose: legacy(purposes, settings.purpose), mood: legacy(moods, settings.mood), tempo: legacy(tempos, settings.tempo), language: legacy(vocals, settings.language), lyricsMode: legacy(lyrics, settings.lyricsMode), instruments: (settings.instruments ?? []).map(item => legacy(instruments, item)) };
 }
 export function migrateState(state: DemoState): DemoState {
-  return { ...state, draft: migrateSettings(state.draft), tracks: state.tracks.map(track => ({ ...track, settings: migrateSettings(track.settings) })), jobs: state.jobs.map(job => ({ ...job, settings: migrateSettings(job.settings) })) };
+  const user = state.user?.email === 'alex@demo.neonsound.local' ? { ...state.user, email: 'alex@demo.auen.local' } : state.user;
+  return { ...state, user, draft: migrateSettings(state.draft), tracks: state.tracks.map(track => ({ ...track, settings: migrateSettings(track.settings) })), jobs: state.jobs.map(job => ({ ...job, settings: migrateSettings(job.settings) })) };
 }

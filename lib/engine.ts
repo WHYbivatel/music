@@ -2,7 +2,7 @@ import { cost, PRICING, EXAMPLES } from './config';
 import { normalizeTags, prepareRequest } from './tags';
 import { defaults, type DemoState, type Settings, type Track } from './types';
 export function initialState(): DemoState {
- return { version: 1, balance: PRICING.initialBalance, tracks: ['Midnight in Tokyo', 'Тихие орбиты', 'Beyond the horizon'].map((title,i) => ({ id: `seed-${i}`, title, created: Date.now() - (i+1)*86400000, settings: {...defaults, prompt: EXAMPLES[i].prompt, genre: EXAMPLES[i].genre}, cover: i+1, favorite: i === 1, audioUrl: '/audio/demo-120.wav', demo: true })), jobs: [], payments: [], operations: [], draft: {...defaults}, user: {name:'Алекс', email:'alex@demo.neonsound.local'} };
+ return { version: 1, balance: PRICING.initialBalance, tracks: ['Midnight in Tokyo', 'Тихие орбиты', 'Beyond the horizon'].map((title,i) => ({ id: `seed-${i}`, title, created: Date.now() - (i+1)*86400000, settings: {...defaults, prompt: EXAMPLES[i].prompt, genre: EXAMPLES[i].genre}, cover: i+1, favorite: i === 1, audioUrl: '/audio/demo-120.wav', demo: true })), jobs: [], payments: [], operations: [], draft: {...defaults}, user: {name:'Алекс', email:'alex@demo.auen.local'} };
 }
 export function createJob(state: DemoState, settings: Settings, key: string, fail = false, now = Date.now()): DemoState {
  if (state.jobs.some(j => j.key === key)) return state;

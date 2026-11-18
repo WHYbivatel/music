@@ -8,7 +8,7 @@
 - Публикация: PM2-процесс `music.esl.kz`, `next start -H 127.0.0.1 -p 3220`. Nginx `music.esl.kz` проксирует только на этот порт. Порт 3100 занят другим приложением и не используется этим сайтом.
 - Стек интерфейса: Next.js 16, React 19, TypeScript. Сборка `npm run build`, проверка `npm test` и `npm run typecheck`.
 - Данные студии, баланс, заявки, черновик и демоадминка живут в `localStorage` / `sessionStorage` (`lib/store.ts`, `lib/engine.ts`, `lib/adapters.ts`). `NEXT_PUBLIC_DATA_MODE=mock`.
-- `apiAdapter` описан, сервера за ним не было. Пароль не принимался. Демоадмин `admin@demo.neonsound.local` / `neon-admin-demo` — только mock.
+- `apiAdapter` описан, сервера за ним не было. Пароль не принимался. Демоадмин `admin@demo.auen.local` / `neon-admin-demo` — только mock.
 - Общие PostgreSQL и Redis на `127.0.0.1` уже работают. Своей базы, роли, очереди и каталога аудио у music.esl.kz не было.
 - PWA не кэширует `/v1/`, `/api/`, админку, вход, профиль и пополнение.
 

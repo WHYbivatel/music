@@ -1,4 +1,4 @@
-/* NEON SOUND production worker. Financial/auth/admin traffic is never cached. */
+/* ÄUEN production worker. Financial/auth/admin traffic is never cached. */
 const BUILD_ID='__BUILD_ID__';
 const VERSION='neon-sound-'+BUILD_ID;
 const STATIC=VERSION+'-static';
@@ -31,7 +31,7 @@ self.addEventListener('fetch',event=>{
  if(request.mode==='navigate'){
   // Locale prefixes share the public shell. Account, payment and admin HTML stay uncached.
   const bare=url.pathname.replace(/^\/(kk|ru|en)(?=\/|$)/,'')||'/';
-  const allowed=['/','/library','/ui-kit'].includes(bare);
+  const allowed=['/','/studio','/library','/ui-kit'].includes(bare);
   event.respondWith((async()=>{try{const response=await fetch(request,{cache:'no-store'});if(response.ok&&allowed){const cache=await caches.open(PAGES);await cache.put(url.pathname,response.clone());}return response;}catch{return (allowed?await (await caches.open(PAGES)).match(url.pathname):null)||await (await caches.open(STATIC)).match('/offline.html')||Response.error();}})());return;
  }
  const safe=SHELL.includes(url.pathname)||url.pathname.startsWith('/_next/static/')||url.pathname.startsWith('/covers/')||url.pathname.startsWith('/icons/');

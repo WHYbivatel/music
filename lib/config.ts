@@ -1,4 +1,4 @@
-export const PRODUCT = { name: 'NEON SOUND', subtitle: 'Твоя идея. Твоё звучание.' };
+export const PRODUCT = { name: 'ÄUEN', subtitle: 'Твоя идея. Твоё звучание.' };
 export const PRICING = { currency: '₸', perBlock: 5, blockSeconds: 30, initialBalance: 50, packages: [
   { id: 'start', name: 'Старт', price: 15000, tokens: 300, description: 'Чтобы найти своё звучание' },
   { id: 'creator', name: 'Создатель', price: 35000, tokens: 800, description: 'Для регулярной работы над песнями и видео' },

@@ -67,7 +67,7 @@ const mockUser = () => getState().user;
 export const mockAdapter: AppAdapter = {
   auth: {
     async current() { return mockUser(); },
-    async login() { update(s => ({ ...s, user: { name: 'Алекс', email: 'alex@demo.neonsound.local' } })); recordAudit('auth.login', 'Вход в локальный профиль'); return mockUser(); },
+    async login() { update(s => ({ ...s, user: { name: 'Алекс', email: 'alex@demo.auen.local' } })); recordAudit('auth.login', 'Вход в локальный профиль'); return mockUser(); },
     async register() { return this.login(); },
     async logout() { recordAudit('auth.logout', 'Выход из аккаунта'); update(s => ({ ...s, user: null })); },
     async updateName(name) { update(s => ({ ...s, user: s.user ? { ...s.user, name } : null })); return mockUser(); },

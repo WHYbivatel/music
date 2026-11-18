@@ -12,7 +12,7 @@ import { Button, Panel, useUI } from './ui';
 
 function finish(router: ReturnType<typeof useRouter>, href: (path: string) => string, notify: (message: string) => void, onRefresh?: () => Promise<void>) {
   notify(t('Добро пожаловать в студию'));
-  router.push(href('/'));
+  router.push(href('/studio'));
   onRefresh?.();
 }
 

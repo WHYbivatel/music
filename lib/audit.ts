@@ -1,7 +1,7 @@
 import type { DemoState } from './types';
 export type Actor = { name: string; email: string; role: 'user' | 'admin' | 'system' | 'guest' };
 export type AuditEvent = { id: string; created: number; action: string; actor: Actor; summary: string; entity?: string; outcome: 'success' | 'pending' | 'error'; amount?: number; tokens?: number; source: 'local' | 'example' };
-export const ADMIN_ACTOR:Actor={name:'Администратор',email:'admin@demo.neonsound.local',role:'admin'};
+export const ADMIN_ACTOR:Actor={name:'Администратор',email:'admin@demo.auen.local',role:'admin'};
 export const actorOf=(s:DemoState):Actor=>s.user?{...s.user,role:'user'}:{name:'Гость',email:'—',role:'guest'};
 export function event(action:string,summary:string,actor:Actor,extra:Partial<AuditEvent>={}):AuditEvent{return {id:crypto.randomUUID(),created:Date.now(),action,summary,actor,outcome:'success',source:'local',...extra};}
 export function withAudit(state:DemoState,entry:AuditEvent):DemoState{return {...state,audit:[entry,...(state.audit||[])].slice(0,2000)};}

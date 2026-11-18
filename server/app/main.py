@@ -15,7 +15,7 @@ from .redisq import client
 
 log = logging.getLogger("music.api")
 setup_logging(get_settings().log_level)
-app = FastAPI(title="NEON SOUND", docs_url=None, redoc_url=None, openapi_url=None)
+app = FastAPI(title="ÄUEN", docs_url=None, redoc_url=None, openapi_url=None)
 app.include_router(router, prefix="/v1")
 
 

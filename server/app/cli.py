@@ -43,7 +43,7 @@ def create_admin(email: str, name: str, password: str) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="NEON SOUND maintenance")
+    parser = argparse.ArgumentParser(description="ÄUEN maintenance")
     sub = parser.add_subparsers(dest="command", required=True)
     admin = sub.add_parser("create-admin")
     admin.add_argument("--email", required=True)

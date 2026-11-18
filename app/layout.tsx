@@ -3,6 +3,7 @@ import { headers } from 'next/headers';
 import './globals.css';
 import './admin.css';
 import './atmosphere.css';
+import './landing.css';
 import { versionedAsset } from '@/lib/version';
 import { MOTION, PRODUCT } from '@/lib/config';
 import { isLocale } from '@/lib/i18n';

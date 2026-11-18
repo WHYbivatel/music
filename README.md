@@ -1,4 +1,4 @@
-# NEON SOUND
+# ÄUEN
 
 Локальный интерактивный frontend музыкальной студии: Next.js 16, React 19, TypeScript, Tailwind CSS 4, Motion for React. Модель, реальные платежи и публичная публикация не подключены.
 
@@ -116,7 +116,7 @@ Track содержит `audioUrl` для воспроизведения, `settin
 
 Демоданные уже указаны на экране входа:
 
-- Логин: `admin@demo.neonsound.local`
+- Логин: `admin@demo.auen.local`
 - Пароль: `neon-admin-demo`
 - Кнопка: **«Войти в демоадминку»**. Вводить ничего не нужно.
 

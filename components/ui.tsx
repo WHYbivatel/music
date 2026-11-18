@@ -2,22 +2,48 @@
 import { count, getActiveLocale, t } from '@/lib/i18n';
 import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState, type ReactNode, type ButtonHTMLAttributes, type SelectHTMLAttributes } from 'react';
 import { AnimatePresence, MotionConfig, motion, useReducedMotion } from 'motion/react';
-import { Check, ChevronDown, LoaderCircle, X } from 'lucide-react';
+import { Check, ChevronDown, LoaderCircle, Moon, Sun, X } from 'lucide-react';
 import { MOTION } from '@/lib/config';
+import { useI18n } from './i18n';
 import CountUp from './react-bits/CountUp';
+type Appearance = 'dark' | 'light';
 export type Theme={accent:string;radius:number;mode:'full'|'reduced'|'off';intensity:number};
 const defaultTheme:Theme={accent:'#F34BA5',radius:14,mode:'full',intensity:50};
-const UIContext=createContext({theme:defaultTheme,setTheme:(_theme:Theme)=>{},animated:false,notify:(_message:string)=>{},themeReady:false});
+const UIContext=createContext({theme:defaultTheme,setTheme:(_theme:Theme)=>{},appearance:'dark' as Appearance,setAppearance:(_appearance:Appearance)=>{},animated:false,notify:(_message:string)=>{},themeReady:false});
 export const useUI=()=>useContext(UIContext);
 export function UIProvider({children}:{children:ReactNode}){
  const [theme,setTheme]=useState(defaultTheme),[toast,setToast]=useState(''),[themeReady,setThemeReady]=useState(false);
+ const [appearance,setAppearance]=useState<Appearance>('dark');
  const reduce=useReducedMotion();const timer=useRef<ReturnType<typeof setTimeout>|null>(null);
  useLayoutEffect(()=>{try{const v=localStorage.getItem('neon-theme');if(v)setTheme({...defaultTheme,...JSON.parse(v)});}catch{}setThemeReady(true);},[]);
+ useLayoutEffect(()=>{
+  try { if(localStorage.getItem('neon-appearance')==='light')setAppearance('light'); } catch {}
+ },[]);
+ useLayoutEffect(()=>{
+  if(!themeReady)return;
+  document.documentElement.dataset.appearance=appearance;
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content',appearance==='light'?'#f9f6fa':'#09090f');
+  try { localStorage.setItem('neon-appearance',appearance); } catch {}
+ },[appearance,themeReady]);
  useEffect(()=>{if(!themeReady)return;const root=document.documentElement;root.style.setProperty('--accent',theme.accent);root.style.setProperty('--radius',`${theme.radius}px`);root.style.setProperty('--effect-intensity',`${theme.intensity/100}`);root.dataset.motion=reduce&&theme.mode==='full'?'reduced':theme.mode;try{localStorage.setItem('neon-theme',JSON.stringify(theme));}catch{}},[theme,reduce,themeReady]);
  const animated=!reduce&&theme.mode==='full'&&theme.intensity>0;
  function notify(message:string){setToast(message);if(timer.current)clearTimeout(timer.current);timer.current=setTimeout(()=>setToast(''),4200);}
- return <UIContext.Provider value={{theme,setTheme,animated,notify,themeReady}}><MotionConfig reducedMotion={animated?'user':'always'} transition={{duration:theme.mode==='off'?0:MOTION.switch,ease:MOTION.ease}}>{children}<div className="toast-region" aria-live="polite"><AnimatePresence>{toast&&<motion.div className="toast" key={toast} initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} exit={{opacity:0,y:8}}><Check size={17}/>{toast}<button className="icon-button" aria-label={t("Закрыть уведомление")} onClick={()=>setToast('')}><X size={16}/></button></motion.div>}</AnimatePresence></div></MotionConfig></UIContext.Provider>;
+ return <UIContext.Provider value={{theme,setTheme,appearance,setAppearance,animated,notify,themeReady}}><MotionConfig reducedMotion={animated?'user':'always'} transition={{duration:theme.mode==='off'?0:MOTION.switch,ease:MOTION.ease}}>{children}<div className="toast-region" aria-live="polite"><AnimatePresence>{toast&&<motion.div className="toast" key={toast} initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} exit={{opacity:0,y:8}}><Check size={17}/>{toast}<button className="icon-button" aria-label={t("Закрыть уведомление")} onClick={()=>setToast('')}><X size={16}/></button></motion.div>}</AnimatePresence></div></MotionConfig></UIContext.Provider>;
 }
+const themeLabels = {
+ ru: 'Светлая тема',
+ kk: 'Жарық тақырып',
+ en: 'Light theme',
+};
+export function ThemeSwitch() {
+ const {locale}=useI18n();
+ const {appearance,setAppearance}=useUI();
+ const light=appearance==='light';
+ return <button type="button" className="theme-switch" aria-label={themeLabels[locale]} title={themeLabels[locale]} aria-pressed={light} onClick={()=>setAppearance(light?'dark':'light')}>
+  {light ? <Sun size={18} aria-hidden="true"/> : <Moon size={18} aria-hidden="true"/>}
+ </button>;
+}
+
 export function Button({children,variant='secondary',loading=false,className='',...props}:ButtonHTMLAttributes<HTMLButtonElement>&{variant?:'primary'|'secondary'|'ghost'|'destructive';loading?:boolean}){
  const {animated}=useUI();return <motion.button type="button" className={`button ${variant} ${className}`} disabled={props.disabled||loading} aria-busy={loading||undefined} whileTap={animated&&!props.disabled?{scale:.97}:undefined} transition={{duration:MOTION.press}} {...props as any}>{loading?<LoaderCircle size={17} className="spin"/>:null}{children}</motion.button>;
 }
